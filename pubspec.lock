@@ -912,7 +912,7 @@ packages:
   multando_sdk:
     dependency: "direct main"
     description:
-      path: "../sdks/flutter/multando_sdk"
+      path: "../multando-sdks/flutter/multando_sdk"
       relative: true
     source: path
     version: "0.1.0"

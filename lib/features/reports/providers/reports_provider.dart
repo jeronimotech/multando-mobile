@@ -53,8 +53,8 @@ class ReportsNotifier extends Notifier<ReportsState> {
 
     try {
       final client = ref.read(apiClientProvider);
-      if (!client.isInitialized) {
-        state = state.copyWith(isLoading: false);
+      if (!client.isInitialized || !client.isAuthenticated) {
+        state = const ReportsState();
         return;
       }
 

@@ -30,23 +30,10 @@ class MultandoAppBar extends StatelessWidget implements PreferredSizeWidget {
           ? Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'M',
-                      style: TextStyle(
-                        color: MultandoColors.brandRed,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
+                Image.asset(
+                  'assets/images/multando_logo.png',
+                  width: 32,
+                  height: 32,
                 ),
                 const SizedBox(width: 8),
                 Text(

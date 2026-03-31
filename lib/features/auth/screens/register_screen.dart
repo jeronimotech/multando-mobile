@@ -14,7 +14,8 @@ class RegisterScreen extends ConsumerStatefulWidget {
 
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _usernameController = TextEditingController();
+  final _displayNameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -23,7 +24,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _usernameController.dispose();
+    _displayNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _phoneController.dispose();
@@ -40,7 +42,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     await ref.read(authProvider.notifier).register(
-          _nameController.text.trim(),
+          _usernameController.text.trim(),
+          _displayNameController.text.trim(),
           _emailController.text.trim(),
           _passwordController.text,
           phone: _phoneController.text.trim().isEmpty
@@ -69,7 +72,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 40),
-                // Back arrow
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
@@ -113,17 +115,37 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   const SizedBox(height: 16),
                 ],
 
-                // Full name
+                // Username
                 TextFormField(
-                  controller: _nameController,
+                  controller: _usernameController,
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(
+                    labelText: 'Username',
+                    prefixIcon: Icon(Icons.alternate_email),
+                    hintText: 'e.g. luisbautista',
+                  ),
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Username is required';
+                    if (v.trim().length < 3) return 'At least 3 characters';
+                    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(v.trim())) {
+                      return 'Only letters, numbers, and underscores';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Display name
+                TextFormField(
+                  controller: _displayNameController,
                   textInputAction: TextInputAction.next,
                   textCapitalization: TextCapitalization.words,
                   decoration: const InputDecoration(
-                    labelText: 'Full Name',
+                    labelText: 'Display Name',
                     prefixIcon: Icon(Icons.person_outline),
                   ),
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Name is required' : null,
+                      (v == null || v.trim().isEmpty) ? 'Display name is required' : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -175,6 +197,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Password is required';
                     if (v.length < 8) return 'Must be at least 8 characters';
+                    if (v.length > 64) return 'Must be at most 64 characters';
                     return null;
                   },
                 ),

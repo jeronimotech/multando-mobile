@@ -121,23 +121,10 @@ class _AppInitializerState extends ConsumerState<_AppInitializer> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      'M',
-                      style: TextStyle(
-                        color: Color(0xFFE63946),
-                        fontSize: 48,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
+                Image.asset(
+                  'assets/images/multando_logo.png',
+                  width: 120,
+                  height: 120,
                 ),
                 const SizedBox(height: 24),
                 const Text(

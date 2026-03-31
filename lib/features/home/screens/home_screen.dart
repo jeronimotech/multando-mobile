@@ -145,6 +145,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: const Icon(Icons.my_location, color: MultandoColors.brandRed),
             ),
           ),
+          // AI Chat button
+          Positioned(
+            bottom: 100,
+            left: 16,
+            child: FloatingActionButton.small(
+              heroTag: 'chat',
+              backgroundColor: MultandoColors.brandRed,
+              onPressed: () => context.push('/chat'),
+              child: const Icon(Icons.smart_toy, color: Colors.white),
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

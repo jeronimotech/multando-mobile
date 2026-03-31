@@ -16,8 +16,12 @@ import '../widgets/verification_card.dart';
 final _verificationQueueProvider =
     FutureProvider.autoDispose<List<ReportSummary>>((ref) async {
   final client = ref.watch(apiClientProvider);
-  if (!client.isInitialized) return [];
-  return client.verification.getQueue();
+  if (!client.isInitialized || !client.isAuthenticated) return [];
+  try {
+    return await client.verification.getQueue();
+  } catch (_) {
+    return [];
+  }
 });
 
 class VerifyScreen extends ConsumerStatefulWidget {

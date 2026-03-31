@@ -46,8 +46,11 @@ class WalletNotifier extends Notifier<WalletState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       final client = ref.read(apiClientProvider);
-      if (!client.isInitialized) {
-        state = state.copyWith(isLoading: false);
+      if (!client.isInitialized || !client.isAuthenticated) {
+        state = const WalletState(
+          balance: TokenBalance(available: 0, staked: 0, pendingRewards: 0, total: 0),
+          stakingInfo: StakingInfo(stakedAmount: 0, pendingRewards: 0, apy: 5.0, isLocked: false),
+        );
         return;
       }
 

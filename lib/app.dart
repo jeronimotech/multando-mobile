@@ -15,6 +15,7 @@ import 'features/reports/screens/new_report_screen.dart';
 import 'features/reports/screens/report_detail_screen.dart';
 import 'features/reports/screens/reports_list_screen.dart';
 import 'features/verify/screens/verify_screen.dart';
+import 'features/chat/screens/chat_screen.dart';
 import 'features/wallet/screens/wallet_screen.dart';
 
 /// GoRouter configuration with auth guard.
@@ -99,6 +100,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/achievements',
         builder: (_, __) => const AchievementsScreen(),
+      ),
+      GoRoute(
+        path: '/chat',
+        builder: (_, __) => const ChatScreen(),
       ),
     ],
   );

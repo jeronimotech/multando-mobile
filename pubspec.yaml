@@ -14,7 +14,7 @@ dependencies:
 
   # SDK
   multando_sdk:
-    path: ../sdks/flutter/multando_sdk
+    path: ../multando-sdks/flutter/multando_sdk
 
   # Navigation
   go_router: ^14.0.0

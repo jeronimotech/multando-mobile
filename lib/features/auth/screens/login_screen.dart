@@ -47,58 +47,59 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 60),
-                // Logo
-                Center(
-                  child: Container(
-                    width: 72,
-                    height: 72,
-                    decoration: BoxDecoration(
-                      color: MultandoColors.brandRed,
-                      borderRadius: BorderRadius.circular(18),
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Dark header with logo
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top + 32,
+                  bottom: 32,
+                ),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF1A1A2E),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(32),
+                    bottomRight: Radius.circular(32),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Image.asset(
+                      'assets/images/multando_logo.png',
+                      width: 100,
+                      height: 100,
                     ),
-                    child: const Center(
-                      child: Text(
-                        'M',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 40,
-                          fontWeight: FontWeight.w900,
-                        ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Welcome Back',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Center(
-                  child: Text(
-                    'Welcome Back',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      color: MultandoColors.surface900,
+                    const SizedBox(height: 6),
+                    Text(
+                      'Sign in to continue reporting',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.white.withAlpha(180),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                const Center(
-                  child: Text(
-                    'Sign in to continue reporting',
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: MultandoColors.surface500,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 40),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                const SizedBox(height: 32),
 
                 // Error message
                 if (auth.error != null) ...[
@@ -160,7 +161,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Password is required';
-                    if (value.length < 6) return 'Password must be at least 6 characters';
+                    if (value.length < 8) return 'Password must be at least 8 characters';
+                    if (value.length > 64) return 'Password must be at most 64 characters';
                     return null;
                   },
                 ),
@@ -236,7 +238,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 32),
               ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

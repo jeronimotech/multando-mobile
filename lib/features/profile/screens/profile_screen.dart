@@ -61,8 +61,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   radius: 44,
                   backgroundColor: MultandoColors.brandRed,
                   child: Text(
-                    user?.fullName.isNotEmpty == true
-                        ? user!.fullName[0].toUpperCase()
+                    user?.displayName.isNotEmpty == true
+                        ? user!.displayName[0].toUpperCase()
                         : '?',
                     style: const TextStyle(
                       fontSize: 36,
@@ -73,7 +73,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  user?.fullName ?? 'Unknown',
+                  user?.displayName ?? 'Unknown',
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
@@ -109,15 +109,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             child: Row(
               children: [
                 _StatCard(
-                  label: 'Reports',
-                  value: '${user?.reportsCount ?? 0}',
-                  icon: Icons.description,
+                  label: 'Points',
+                  value: '${user?.points ?? 0}',
+                  icon: Icons.stars,
                   color: MultandoColors.brandRed,
                 ),
                 const SizedBox(width: 12),
                 _StatCard(
                   label: 'Verified',
-                  value: '${user?.verifiedReportsCount ?? 0}',
+                  value: user?.isVerified == true ? 'Yes' : 'No',
                   icon: Icons.verified,
                   color: MultandoColors.success,
                 ),
