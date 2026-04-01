@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:multando_sdk/multando_sdk.dart';
 
+import '../../../../core/api_client.dart';
 import '../../../../core/colors.dart';
 import '../../providers/reports_provider.dart';
+
+/// Provider for vehicle types from API.
+final vehicleTypesProvider = FutureProvider.autoDispose<List<VehicleTypeResponse>>((ref) async {
+  final client = ref.watch(apiClientProvider);
+  if (!client.isInitialized) return [];
+  try {
+    return await client.vehicleTypes.list();
+  } catch (_) {
+    return [];
+  }
+});
 
 /// Step 2: Confirm vehicle details, plate number, location.
 class ConfirmStep extends ConsumerStatefulWidget {
@@ -23,17 +36,20 @@ class ConfirmStep extends ConsumerStatefulWidget {
 class _ConfirmStepState extends ConsumerState<ConfirmStep> {
   final _plateController = TextEditingController();
   final _descController = TextEditingController();
-  String? _selectedVehicleType;
+  int? _selectedVehicleTypeId;
   bool _locationLoaded = false;
 
-  static const _vehicleTypes = [
-    ('car', 'Car', Icons.directions_car),
-    ('motorcycle', 'Motorcycle', Icons.two_wheeler),
-    ('truck', 'Truck', Icons.local_shipping),
-    ('bus', 'Bus', Icons.directions_bus),
-    ('van', 'Van', Icons.airport_shuttle),
-    ('bicycle', 'Bicycle', Icons.pedal_bike),
-  ];
+  static const _vehicleIcons = {
+    'car': Icons.directions_car,
+    'motorcycle': Icons.two_wheeler,
+    'truck': Icons.local_shipping,
+    'bus': Icons.directions_bus,
+    'van': Icons.airport_shuttle,
+    'bicycle': Icons.pedal_bike,
+    'taxi': Icons.local_taxi,
+    'pickup': Icons.local_shipping,
+    'suv': Icons.directions_car,
+  };
 
   @override
   void initState() {
@@ -51,12 +67,12 @@ class _ConfirmStepState extends ConsumerState<ConfirmStep> {
   Future<void> _loadCurrentLocation() async {
     try {
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high, // accuracy: LocationAccuracy.high),
+        desiredAccuracy: LocationAccuracy.high,
       );
       ref.read(newReportProvider.notifier).setLocation(
             position.latitude,
             position.longitude,
-            null, // Address is resolved on the backend
+            null,
           );
       setState(() => _locationLoaded = true);
     } catch (_) {
@@ -64,9 +80,15 @@ class _ConfirmStepState extends ConsumerState<ConfirmStep> {
     }
   }
 
+  IconData _iconForCode(String? code) {
+    if (code == null) return Icons.directions_car;
+    return _vehicleIcons[code.toLowerCase()] ?? Icons.directions_car;
+  }
+
   @override
   Widget build(BuildContext context) {
     final newReport = ref.watch(newReportProvider);
+    final vehicleTypesAsync = ref.watch(vehicleTypesProvider);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -102,7 +124,7 @@ class _ConfirmStepState extends ConsumerState<ConfirmStep> {
           ),
           const SizedBox(height: 24),
 
-          // Vehicle type
+          // Vehicle type from API
           const Text(
             'Vehicle Type',
             style: TextStyle(
@@ -112,58 +134,71 @@ class _ConfirmStepState extends ConsumerState<ConfirmStep> {
             ),
           ),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _vehicleTypes.map((vt) {
-              final isSelected = _selectedVehicleType == vt.$1;
-              return GestureDetector(
-                onTap: () {
-                  setState(() => _selectedVehicleType = vt.$1);
-                  ref.read(newReportProvider.notifier).setVehicleType(vt.$1);
-                },
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 150),
-                  width: (MediaQuery.of(context).size.width - 48) / 3,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? MultandoColors.brandRed.withAlpha(20)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
+          vehicleTypesAsync.when(
+            data: (types) => Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: types.map((vt) {
+                final isSelected = _selectedVehicleTypeId == vt.id;
+                return GestureDetector(
+                  onTap: () {
+                    setState(() => _selectedVehicleTypeId = vt.id);
+                    ref.read(newReportProvider.notifier).setVehicleType(vt.id.toString());
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    width: (MediaQuery.of(context).size.width - 48) / 3,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
                       color: isSelected
-                          ? MultandoColors.brandRed
-                          : MultandoColors.surface300,
-                      width: isSelected ? 2 : 1,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        vt.$3,
+                          ? MultandoColors.brandRed.withAlpha(20)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
                         color: isSelected
                             ? MultandoColors.brandRed
-                            : MultandoColors.surface500,
-                        size: 28,
+                            : MultandoColors.surface300,
+                        width: isSelected ? 2 : 1,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        vt.$2,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight:
-                              isSelected ? FontWeight.w600 : FontWeight.w400,
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          _iconForCode(vt.icon),
                           color: isSelected
                               ? MultandoColors.brandRed
-                              : MultandoColors.surface600,
+                              : MultandoColors.surface500,
+                          size: 28,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 4),
+                        Text(
+                          vt.nameEn,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.w400,
+                            color: isSelected
+                                ? MultandoColors.brandRed
+                                : MultandoColors.surface600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ),
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(color: MultandoColors.brandRed),
+              ),
+            ),
+            error: (_, __) => const Text(
+              'Could not load vehicle types',
+              style: TextStyle(color: MultandoColors.danger),
+            ),
           ),
           const SizedBox(height: 24),
 

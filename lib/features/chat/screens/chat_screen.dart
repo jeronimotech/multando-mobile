@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:multando_sdk/multando_sdk.dart';
 
 import '../../../core/colors.dart';
+import '../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../shared/widgets/multando_app_bar.dart';
 import '../providers/chat_provider.dart';
 
@@ -271,6 +272,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
           ),
         ],
       ),
+      bottomNavigationBar: const MultandoBottomNavBar(currentIndex: 2),
     );
   }
 }
@@ -312,7 +314,7 @@ class _WelcomeView extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             const Text(
-              'I can help you report traffic violations, check your rewards, '
+              'I can help you report traffic infractions, check your rewards, '
               'answer questions about infractions, and analyze photos. '
               'Just type a message or snap a photo to get started!',
               textAlign: TextAlign.center,
@@ -328,7 +330,7 @@ class _WelcomeView extends StatelessWidget {
               runSpacing: 8,
               alignment: WrapAlignment.center,
               children: [
-                _SuggestionChip(label: 'Report a violation'),
+                _SuggestionChip(label: 'Report an infraction'),
                 _SuggestionChip(label: 'Check my rewards'),
                 _SuggestionChip(label: 'What infractions exist?'),
               ],

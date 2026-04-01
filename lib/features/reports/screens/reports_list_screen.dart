@@ -123,7 +123,7 @@ class _ReportsListScreenState extends ConsumerState<ReportsListScreen>
     if (reportsState.reports.isEmpty) {
       return MultandoEmptyState(
         title: 'No reports yet',
-        description: 'Start reporting violations to earn rewards!',
+        description: 'Start reporting infractions to earn rewards!',
         icon: Icons.description_outlined,
         action: ElevatedButton.icon(
           onPressed: () => context.push('/reports/new'),

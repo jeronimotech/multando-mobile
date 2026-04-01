@@ -11,7 +11,7 @@ final _demoBadges = [
   const MultandoBadge(
     id: '1',
     name: 'First Report',
-    description: 'Submit your first violation report',
+    description: 'Submit your first infraction report',
     icon: Icons.flag,
     rarity: BadgeRarity.common,
     earned: true,

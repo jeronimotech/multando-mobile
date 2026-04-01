@@ -302,7 +302,7 @@ class _VerifyScreenState extends ConsumerState<VerifyScreen>
           );
         },
       ),
-      bottomNavigationBar: const MultandoBottomNavBar(currentIndex: 2),
+      // Verify is accessible from Reports, no nav bar highlight
     );
   }
 }

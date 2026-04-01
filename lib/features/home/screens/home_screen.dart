@@ -9,13 +9,16 @@ import '../../../core/colors.dart';
 import '../../../shared/widgets/bottom_nav_bar.dart';
 import '../../../shared/widgets/multando_app_bar.dart';
 
-
 /// Provider for nearby reports shown on the map.
 final _nearbyReportsProvider = FutureProvider.autoDispose((ref) async {
   final client = ref.watch(apiClientProvider);
-  if (!client.isInitialized) return [];
-  final result = await client.reports.list(pageSize: 50);
-  return result.items;
+  if (!client.isInitialized || !client.isAuthenticated) return [];
+  try {
+    final result = await client.reports.list(pageSize: 50);
+    return result.items;
+  } catch (_) {
+    return [];
+  }
 });
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -27,7 +30,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   GoogleMapController? _mapController;
-  LatLng _currentPosition = const LatLng(18.4861, -69.9312); // Santo Domingo default
+  LatLng _currentPosition = const LatLng(4.7110, -74.0721); // Bogotá default
   bool _locationLoaded = false;
 
   @override
@@ -49,7 +52,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (permission == LocationPermission.deniedForever) return;
 
       final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high, // accuracy: LocationAccuracy.high),
+        desiredAccuracy: LocationAccuracy.high,
       );
 
       if (mounted) {
@@ -61,14 +64,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           CameraUpdate.newLatLngZoom(_currentPosition, 15),
         );
       }
-    } catch (_) {
-      // Fallback to default position
-    }
+    } catch (_) {}
   }
 
   Set<Marker> _buildMarkers(List reports) {
     final markers = <Marker>{};
-    // Current location marker
     if (_locationLoaded) {
       markers.add(
         Marker(
@@ -79,12 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       );
     }
-
-    // Report markers
     for (final report in reports) {
-      // Reports from the list endpoint don't include location;
-      // in production, we'd use a dedicated geo-search endpoint.
-      // For now, generate nearby offsets for demo.
       markers.add(
         Marker(
           markerId: MarkerId(report.id),
@@ -118,6 +113,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: const MultandoAppBar(title: 'Multando', showLogo: true),
       body: Stack(
         children: [
+          // Map
           GoogleMap(
             initialCameraPosition: CameraPosition(
               target: _currentPosition,
@@ -134,9 +130,71 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               error: (_, __) => {},
             ),
           ),
+
+          // AI Chat banner at top
+          Positioned(
+            top: 12,
+            left: 16,
+            right: 16,
+            child: GestureDetector(
+              onTap: () => context.push('/chat'),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A1A2E),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(40),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: MultandoColors.brandRed,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.smart_toy, color: Colors.white, size: 22),
+                    ),
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Report with Multa AI',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                            ),
+                          ),
+                          Text(
+                            'Send a photo and I\'ll handle the rest',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
           // Location button
           Positioned(
-            bottom: 100,
+            bottom: 90,
             right: 16,
             child: FloatingActionButton.small(
               heroTag: 'location',
@@ -145,24 +203,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: const Icon(Icons.my_location, color: MultandoColors.brandRed),
             ),
           ),
-          // AI Chat button
+
+          // Manual report button (secondary)
           Positioned(
-            bottom: 100,
+            bottom: 90,
             left: 16,
             child: FloatingActionButton.small(
-              heroTag: 'chat',
-              backgroundColor: MultandoColors.brandRed,
-              onPressed: () => context.push('/chat'),
-              child: const Icon(Icons.smart_toy, color: Colors.white),
+              heroTag: 'manual',
+              backgroundColor: Colors.white,
+              onPressed: () => context.push('/reports/new'),
+              child: const Icon(Icons.edit_note, color: MultandoColors.surface600),
             ),
           ),
         ],
       ),
+      // Primary FAB — Chat with Multa AI
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/reports/new'),
-        icon: const Icon(Icons.camera_alt),
-        label: const Text('Report Violation'),
+        onPressed: () => context.push('/chat'),
+        backgroundColor: MultandoColors.brandRed,
+        icon: const Icon(Icons.smart_toy),
+        label: const Text('Chat with Multa'),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       bottomNavigationBar: const MultandoBottomNavBar(currentIndex: 0),
     );
   }

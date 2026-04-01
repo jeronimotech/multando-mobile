@@ -203,13 +203,13 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingTitle1.
   ///
   /// In en, this message translates to:
-  /// **'Report Violations'**
+  /// **'Report Infractions'**
   String get onboardingTitle1;
 
   /// No description provided for @onboardingDesc1.
   ///
   /// In en, this message translates to:
-  /// **'Capture traffic violations with secure evidence collection, including GPS, timestamp, and motion verification.'**
+  /// **'Capture traffic infractions with secure evidence collection, including GPS, timestamp, and motion verification.'**
   String get onboardingDesc1;
 
   /// No description provided for @onboardingTitle2.
@@ -287,7 +287,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportViolation.
   ///
   /// In en, this message translates to:
-  /// **'Report Violation'**
+  /// **'Report Infraction'**
   String get reportViolation;
 
   /// No description provided for @newReport.
@@ -329,7 +329,7 @@ abstract class AppLocalizations {
   /// No description provided for @noReportsDesc.
   ///
   /// In en, this message translates to:
-  /// **'Start reporting violations to earn rewards!'**
+  /// **'Start reporting infractions to earn rewards!'**
   String get noReportsDesc;
 
   /// No description provided for @captureEvidence.

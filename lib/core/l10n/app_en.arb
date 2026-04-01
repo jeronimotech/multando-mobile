@@ -20,8 +20,8 @@
   "logoutConfirm": "Are you sure you want to log out?",
   "cancel": "Cancel",
 
-  "onboardingTitle1": "Report Violations",
-  "onboardingDesc1": "Capture traffic violations with secure evidence collection, including GPS, timestamp, and motion verification.",
+  "onboardingTitle1": "Report Infractions",
+  "onboardingDesc1": "Capture traffic infractions with secure evidence collection, including GPS, timestamp, and motion verification.",
   "onboardingTitle2": "Community Verification",
   "onboardingDesc2": "Help verify reports from other citizens. Swipe to approve or reject - earn rewards for every verification.",
   "onboardingTitle3": "Earn Rewards",
@@ -36,14 +36,14 @@
   "wallet": "Wallet",
   "profile": "Profile",
 
-  "reportViolation": "Report Violation",
+  "reportViolation": "Report Infraction",
   "newReport": "New Report",
   "myReports": "My Reports",
   "allReports": "All Reports",
   "listView": "List",
   "mapView": "Map",
   "noReports": "No reports yet",
-  "noReportsDesc": "Start reporting violations to earn rewards!",
+  "noReportsDesc": "Start reporting infractions to earn rewards!",
 
   "captureEvidence": "Capture Evidence",
   "selectInfraction": "Select Infraction",

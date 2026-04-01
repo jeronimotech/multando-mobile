@@ -15,7 +15,7 @@ class MultandoBottomNavBar extends StatelessWidget {
   static const _routes = [
     '/home',
     '/reports',
-    '/verify',
+    '/chat',
     '/wallet',
     '/profile',
   ];
@@ -44,9 +44,9 @@ class MultandoBottomNavBar extends StatelessWidget {
           label: 'Reports',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.verified_outlined),
-          activeIcon: Icon(Icons.verified),
-          label: 'Verify',
+          icon: Icon(Icons.smart_toy_outlined),
+          activeIcon: Icon(Icons.smart_toy),
+          label: 'Multa AI',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.account_balance_wallet_outlined),

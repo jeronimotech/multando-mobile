@@ -20,9 +20,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   static const _pages = [
     _OnboardingPage(
       icon: Icons.camera_alt,
-      title: 'Report Violations',
+      title: 'Report Infractions',
       description:
-          'Capture traffic violations with secure evidence collection, '
+          'Capture traffic infractions with secure evidence collection, '
           'including GPS, timestamp, and motion verification.',
       color: MultandoColors.brandRed,
     ),

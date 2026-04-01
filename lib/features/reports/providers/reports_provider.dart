@@ -200,7 +200,7 @@ class NewReportNotifier extends Notifier<NewReportState> {
         vehicleTypeId: state.vehicleTypeId,
         description: state.description.isEmpty ? null : state.description,
         occurredAt: DateTime.now(),
-        source: ReportSource.mobileApp,
+        source: ReportSource.mobile,
       );
 
       final result = await client.reports.create(report);

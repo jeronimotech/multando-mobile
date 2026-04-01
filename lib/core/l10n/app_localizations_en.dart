@@ -60,11 +60,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
-  String get onboardingTitle1 => 'Report Violations';
+  String get onboardingTitle1 => 'Report Infractions';
 
   @override
   String get onboardingDesc1 =>
-      'Capture traffic violations with secure evidence collection, including GPS, timestamp, and motion verification.';
+      'Capture traffic infractions with secure evidence collection, including GPS, timestamp, and motion verification.';
 
   @override
   String get onboardingTitle2 => 'Community Verification';
@@ -105,7 +105,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile => 'Profile';
 
   @override
-  String get reportViolation => 'Report Violation';
+  String get reportViolation => 'Report Infraction';
 
   @override
   String get newReport => 'New Report';
@@ -126,7 +126,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noReports => 'No reports yet';
 
   @override
-  String get noReportsDesc => 'Start reporting violations to earn rewards!';
+  String get noReportsDesc => 'Start reporting infractions to earn rewards!';
 
   @override
   String get captureEvidence => 'Capture Evidence';

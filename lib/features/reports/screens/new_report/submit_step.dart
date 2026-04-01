@@ -126,7 +126,7 @@ class SubmitStep extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     'By submitting, you confirm this report is accurate and '
-                    'was captured at the time of the violation.',
+                    'was captured at the time of the infraction.',
                     style: TextStyle(fontSize: 12, color: MultandoColors.surface600),
                   ),
                 ),

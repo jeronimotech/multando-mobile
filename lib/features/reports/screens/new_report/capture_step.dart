@@ -39,7 +39,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Take a photo of the violation and select the infraction type.',
+            'Take a photo of the infraction and select the infraction type.',
             style: TextStyle(color: MultandoColors.surface500, fontSize: 14),
           ),
           const SizedBox(height: 24),
@@ -154,11 +154,11 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: items.where((i) => i.isActive).map((infraction) {
-        final isSelected = newReport.selectedInfractionId == infraction.id;
+      children: items.map((infraction) {
+        final isSelected = newReport.selectedInfractionId == infraction.id.toString();
         return GestureDetector(
           onTap: () =>
-              ref.read(newReportProvider.notifier).setInfraction(infraction.id),
+              ref.read(newReportProvider.notifier).setInfraction(infraction.id.toString()),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -186,7 +186,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  infraction.name,
+                  infraction.nameEn,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
