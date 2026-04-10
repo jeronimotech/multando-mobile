@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:multando_sdk/multando_sdk.dart';
 
@@ -60,12 +62,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     });
   }
 
+  Future<void> _sendLocation() async {
+    try {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        await Geolocator.requestPermission();
+      }
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      final locationText =
+          'My current location: ${position.latitude.toStringAsFixed(6)}, '
+          '${position.longitude.toStringAsFixed(6)}';
+      ref.read(chatProvider.notifier).sendMessage(locationText);
+      _scrollToBottom();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not get location')),
+        );
+      }
+    }
+  }
+
   void _sendMessage() {
     final text = _controller.text.trim();
     if (text.isEmpty && _pendingImageBase64 == null) return;
 
     ref.read(chatProvider.notifier).sendMessage(
-          text.isEmpty ? 'Analyze this image' : text,
+          text.isNotEmpty ? text : '📷',
           imageBase64: _pendingImageBase64,
         );
     _controller.clear();
@@ -88,7 +113,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 
     return Scaffold(
       appBar: MultandoAppBar(
-        title: 'Multa AI',
+        title: 'Multando',
         showLogo: true,
         actions: [
           if (chat.conversation != null)
@@ -224,6 +249,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                   onPressed: _pickImage,
                   tooltip: 'Attach photo',
                 ),
+                // Location button
+                IconButton(
+                  icon: const Icon(Icons.location_on_outlined),
+                  color: MultandoColors.surface500,
+                  onPressed: _sendLocation,
+                  tooltip: 'Share location',
+                ),
                 // Text field
                 Expanded(
                   child: Container(
@@ -284,7 +316,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
 class _WelcomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -408,14 +440,56 @@ class _ChatBubble extends StatelessWidget {
                   bottomRight: Radius.circular(_isUser ? 4 : 18),
                 ),
               ),
-              child: Text(
-                message.content ?? '',
-                style: TextStyle(
-                  color: _isUser ? Colors.white : MultandoColors.surface800,
-                  fontSize: 15,
-                  height: 1.4,
-                ),
-              ),
+              child: _isUser
+                  ? Text(
+                      message.content ?? '',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        height: 1.4,
+                      ),
+                    )
+                  : MarkdownBody(
+                      data: message.content ?? '',
+                      shrinkWrap: true,
+                      styleSheet: MarkdownStyleSheet(
+                        p: const TextStyle(
+                          color: MultandoColors.surface800,
+                          fontSize: 15,
+                          height: 1.4,
+                        ),
+                        strong: const TextStyle(
+                          color: MultandoColors.surface900,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                        listBullet: const TextStyle(
+                          color: MultandoColors.surface600,
+                          fontSize: 15,
+                        ),
+                        h1: const TextStyle(
+                          color: MultandoColors.surface900,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        h2: const TextStyle(
+                          color: MultandoColors.surface900,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        h3: const TextStyle(
+                          color: MultandoColors.surface900,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        code: TextStyle(
+                          color: MultandoColors.brandRed,
+                          backgroundColor: MultandoColors.surface200,
+                          fontSize: 14,
+                        ),
+                        blockSpacing: 8,
+                      ),
+                    ),
             ),
           ),
           if (_isUser) const SizedBox(width: 8),

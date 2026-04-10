@@ -80,13 +80,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       );
     }
     for (final report in reports) {
+      final lat = report.location?.latitude;
+      final lon = report.location?.longitude;
+      if (lat == null || lon == null) continue;
       markers.add(
         Marker(
           markerId: MarkerId(report.id),
-          position: LatLng(
-            _currentPosition.latitude + (reports.indexOf(report) * 0.001),
-            _currentPosition.longitude + (reports.indexOf(report) * 0.0008),
-          ),
+          position: LatLng(lat, lon),
           icon: BitmapDescriptor.defaultMarkerWithHue(
             report.status.value == 'verified'
                 ? BitmapDescriptor.hueGreen
