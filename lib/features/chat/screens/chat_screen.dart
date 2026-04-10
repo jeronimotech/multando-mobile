@@ -46,10 +46,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     });
   }
 
-  Future<void> _pickImage() async {
+  Future<void> _pickImage([ImageSource source = ImageSource.camera]) async {
     final picker = ImagePicker();
     final image = await picker.pickImage(
-      source: ImageSource.camera,
+      source: source,
       maxWidth: 1024,
       maxHeight: 1024,
       imageQuality: 80,
@@ -246,9 +246,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                 IconButton(
                   icon: const Icon(Icons.camera_alt_outlined),
                   color: MultandoColors.surface500,
-                  onPressed: _pickImage,
-                  tooltip: 'Attach photo',
+                  onPressed: () => _pickImage(ImageSource.camera),
+                  tooltip: 'Take photo',
                 ),
+                // Gallery button (dev only)
+                if (const bool.fromEnvironment('dart.vm.product') == false)
+                  IconButton(
+                    icon: const Icon(Icons.photo_library_outlined),
+                    color: MultandoColors.surface500,
+                    onPressed: () => _pickImage(ImageSource.gallery),
+                    tooltip: 'Pick from gallery (dev)',
+                  ),
                 // Location button
                 IconButton(
                   icon: const Icon(Icons.location_on_outlined),

@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:multando_sdk/multando_sdk.dart';
 
 import '../../../core/api_client.dart';
@@ -76,10 +80,57 @@ class ChatNotifier extends Notifier<ChatState> {
         messages: [...state.messages, userMessage],
       );
 
+      // Sign the image if present.
+      String? imageHash;
+      String? imageSignature;
+      String? imageTimestamp;
+      double? imageLat;
+      double? imageLon;
+      String? deviceId;
+
+      if (imageBase64 != null) {
+        try {
+          final bytes = base64Decode(imageBase64);
+          final timestamp = DateTime.now().toUtc().toIso8601String();
+          final position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+          ).timeout(const Duration(seconds: 5), onTimeout: () {
+            throw Exception('GPS timeout');
+          });
+
+          final evidence = await EvidenceSigner.signEvidence(
+            imageBytes: Uint8List.fromList(bytes),
+            timestamp: timestamp,
+            latitude: position.latitude,
+            longitude: position.longitude,
+            accuracy: position.accuracy,
+            motionVerified: false,
+            imageUri: 'chat_upload',
+            captureMethod: 'camera',
+          );
+
+          imageHash = evidence.imageHash;
+          imageSignature = evidence.signature;
+          imageTimestamp = evidence.timestamp;
+          imageLat = evidence.latitude;
+          imageLon = evidence.longitude;
+          deviceId = evidence.deviceId;
+        } catch (_) {
+          // Signing failed — still send unsigned (backend marks as unverified)
+        }
+      }
+
       // Send to API.
       final request = SendMessageRequest(
         content: content,
         imageBase64: imageBase64,
+        imageHash: imageHash,
+        imageSignature: imageSignature,
+        imageTimestamp: imageTimestamp,
+        imageLatitude: imageLat,
+        imageLongitude: imageLon,
+        deviceId: deviceId,
+        captureMethod: imageBase64 != null ? 'camera' : null,
       );
       final response =
           await _client.chat.sendMessage(conversation.id, request);
