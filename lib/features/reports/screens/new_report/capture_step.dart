@@ -147,6 +147,16 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         position.longitude,
         null,
       );
+
+      // Store signed evidence metadata for submission
+      ref.read(newReportProvider.notifier).setEvidence(
+        imageBytes: bytes,
+        imageHash: evidence.imageHash,
+        signature: evidence.signature,
+        timestamp: timestamp,
+        deviceId: evidence.deviceId,
+        captureMethod: evidence.captureMethod,
+      );
     } catch (e) {
       if (!mounted) return;
       setState(() => _signing = false);

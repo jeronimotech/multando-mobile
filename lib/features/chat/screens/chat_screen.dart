@@ -222,6 +222,37 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
               ),
             ),
 
+          // Quick reply chips
+          if (chat.quickReplies.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: chat.quickReplies.map((reply) {
+                  return ActionChip(
+                    label: Text(reply.label),
+                    labelStyle: const TextStyle(
+                      color: MultandoColors.brandRed,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                    backgroundColor: MultandoColors.brandRed.withAlpha(20),
+                    side: BorderSide(color: MultandoColors.brandRed.withAlpha(80)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    onPressed: chat.isSending
+                        ? null
+                        : () {
+                            ref.read(chatProvider.notifier).sendMessage(reply.value);
+                            _scrollToBottom();
+                          },
+                  );
+                }).toList(),
+              ),
+            ),
+
           // Input bar
           Container(
             decoration: BoxDecoration(

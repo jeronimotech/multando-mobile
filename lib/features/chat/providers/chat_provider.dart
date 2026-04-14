@@ -16,6 +16,7 @@ class ChatState {
     this.isSending = false,
     this.error,
     this.lastToolCalls = const [],
+    this.quickReplies = const [],
   });
 
   final Conversation? conversation;
@@ -24,6 +25,7 @@ class ChatState {
   final bool isSending;
   final String? error;
   final List<Map<String, dynamic>> lastToolCalls;
+  final List<QuickReply> quickReplies;
 
   ChatState copyWith({
     Conversation? conversation,
@@ -32,6 +34,7 @@ class ChatState {
     bool? isSending,
     String? error,
     List<Map<String, dynamic>>? lastToolCalls,
+    List<QuickReply>? quickReplies,
   }) {
     return ChatState(
       conversation: conversation ?? this.conversation,
@@ -40,6 +43,7 @@ class ChatState {
       isSending: isSending ?? this.isSending,
       error: error,
       lastToolCalls: lastToolCalls ?? this.lastToolCalls,
+      quickReplies: quickReplies ?? this.quickReplies,
     );
   }
 }
@@ -56,7 +60,7 @@ class ChatNotifier extends Notifier<ChatState> {
   Future<void> sendMessage(String content, {String? imageBase64}) async {
     if (content.trim().isEmpty && imageBase64 == null) return;
 
-    state = state.copyWith(isSending: true, error: null);
+    state = state.copyWith(isSending: true, error: null, quickReplies: []);
 
     try {
       // Create conversation on first message.
@@ -149,6 +153,7 @@ class ChatNotifier extends Notifier<ChatState> {
         messages: updatedMessages,
         isSending: false,
         lastToolCalls: response.toolCalls,
+        quickReplies: response.quickReplies,
       );
     } catch (e) {
       state = state.copyWith(

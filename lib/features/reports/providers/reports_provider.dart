@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multando_sdk/multando_sdk.dart';
 
@@ -43,12 +46,11 @@ class ReportsState {
 class ReportsNotifier extends Notifier<ReportsState> {
   @override
   ReportsState build() {
-    loadReports();
+    Future.microtask(() => loadReports());
     return const ReportsState(isLoading: true);
   }
 
   Future<void> loadReports({bool refresh = false}) async {
-    if (state.isLoading && !refresh) return;
     state = state.copyWith(isLoading: true, error: null);
 
     try {
@@ -124,6 +126,12 @@ class NewReportState {
     this.address,
     this.isSubmitting = false,
     this.error,
+    this.evidenceImageBytes,
+    this.evidenceImageHash,
+    this.evidenceSignature,
+    this.evidenceTimestamp,
+    this.evidenceDeviceId,
+    this.evidenceCaptureMethod,
   });
 
   final int step;
@@ -138,6 +146,14 @@ class NewReportState {
   final bool isSubmitting;
   final String? error;
 
+  /// Signed evidence metadata from the capture step.
+  final Uint8List? evidenceImageBytes;
+  final String? evidenceImageHash;
+  final String? evidenceSignature;
+  final String? evidenceTimestamp;
+  final String? evidenceDeviceId;
+  final String? evidenceCaptureMethod;
+
   NewReportState copyWith({
     int? step,
     String? capturedImagePath,
@@ -150,6 +166,12 @@ class NewReportState {
     String? address,
     bool? isSubmitting,
     String? error,
+    Uint8List? evidenceImageBytes,
+    String? evidenceImageHash,
+    String? evidenceSignature,
+    String? evidenceTimestamp,
+    String? evidenceDeviceId,
+    String? evidenceCaptureMethod,
   }) {
     return NewReportState(
       step: step ?? this.step,
@@ -163,6 +185,12 @@ class NewReportState {
       address: address ?? this.address,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       error: error,
+      evidenceImageBytes: evidenceImageBytes ?? this.evidenceImageBytes,
+      evidenceImageHash: evidenceImageHash ?? this.evidenceImageHash,
+      evidenceSignature: evidenceSignature ?? this.evidenceSignature,
+      evidenceTimestamp: evidenceTimestamp ?? this.evidenceTimestamp,
+      evidenceDeviceId: evidenceDeviceId ?? this.evidenceDeviceId,
+      evidenceCaptureMethod: evidenceCaptureMethod ?? this.evidenceCaptureMethod,
     );
   }
 }
@@ -185,10 +213,35 @@ class NewReportNotifier extends Notifier<NewReportState> {
   void setLocation(double lat, double lng, String? address) =>
       state = state.copyWith(latitude: lat, longitude: lng, address: address);
 
+  void setEvidence({
+    required Uint8List imageBytes,
+    required String imageHash,
+    required String signature,
+    required String timestamp,
+    required String deviceId,
+    required String captureMethod,
+  }) {
+    state = state.copyWith(
+      evidenceImageBytes: imageBytes,
+      evidenceImageHash: imageHash,
+      evidenceSignature: signature,
+      evidenceTimestamp: timestamp,
+      evidenceDeviceId: deviceId,
+      evidenceCaptureMethod: captureMethod,
+    );
+  }
+
   Future<ReportDetail?> submit() async {
     state = state.copyWith(isSubmitting: true, error: null);
     try {
       final client = ref.read(apiClientProvider);
+
+      // Encode evidence image to base64 if available
+      String? evidenceBase64;
+      if (state.evidenceImageBytes != null) {
+        evidenceBase64 = base64Encode(state.evidenceImageBytes!);
+      }
+
       final report = ReportCreate(
         infractionId: state.selectedInfractionId!,
         plateNumber: state.plateNumber,
@@ -201,6 +254,13 @@ class NewReportNotifier extends Notifier<NewReportState> {
         description: state.description.isEmpty ? null : state.description,
         occurredAt: DateTime.now(),
         source: ReportSource.mobile,
+        evidenceImageBase64: evidenceBase64,
+        evidenceMediaType: evidenceBase64 != null ? 'image/jpeg' : null,
+        evidenceImageHash: state.evidenceImageHash,
+        evidenceSignature: state.evidenceSignature,
+        evidenceTimestamp: state.evidenceTimestamp,
+        evidenceDeviceId: state.evidenceDeviceId,
+        evidenceCaptureMethod: state.evidenceCaptureMethod,
       );
 
       final result = await client.reports.create(report);
