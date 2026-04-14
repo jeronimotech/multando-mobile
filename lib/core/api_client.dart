@@ -9,11 +9,15 @@ import 'storage.dart';
 /// sandbox mode via the developer settings by changing [_baseUrl].
 class ApiClientNotifier extends Notifier<MultandoClient> {
   static const _prodUrl = 'https://api.multando.com';
-  static const _sandboxUrl = 'https://sandbox.api.multando.com';
+  static const _sandboxUrl = 'https://sandbox-api.multando.com';
   // Use --dart-define=API_URL=http://10.0.2.2:8000 for local Docker testing
   // (10.0.2.2 is the Android emulator's alias for host localhost)
   static const _localUrl = String.fromEnvironment('API_URL');
   static const _apiKey = 'multando-flutter-mobile-v1';
+
+  // Default to sandbox — preserves dev/test data separation.
+  // Users can toggle to production via developer settings.
+  static const _defaultSandbox = true;
 
   @override
   MultandoClient build() {
@@ -22,9 +26,9 @@ class ApiClientNotifier extends Notifier<MultandoClient> {
     return client;
   }
 
-  Future<void> initializeClient({bool sandbox = false}) async {
+  Future<void> initializeClient({bool? sandbox}) async {
     final prefs = ref.read(prefsProvider);
-    final isSandbox = sandbox || (prefs.getBool('sandbox_mode') ?? false);
+    final isSandbox = sandbox ?? (prefs.getBool('sandbox_mode') ?? _defaultSandbox);
     final baseUrl = _localUrl.isNotEmpty
         ? _localUrl
         : isSandbox
