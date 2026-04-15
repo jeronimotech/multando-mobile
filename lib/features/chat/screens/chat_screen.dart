@@ -85,6 +85,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
     }
   }
 
+  Future<void> _handleQuickReply(QuickReply reply) async {
+    switch (reply.action) {
+      case QuickReplyAction.shareLocation:
+        await _sendLocation();
+        return;
+      case QuickReplyAction.takePhoto:
+        await _pickImage(ImageSource.camera);
+        return;
+      case QuickReplyAction.pickImage:
+        await _pickImage(ImageSource.gallery);
+        return;
+      case QuickReplyAction.openUrl:
+        final messenger = ScaffoldMessenger.of(context);
+        messenger.showSnackBar(SnackBar(content: Text('Opening ${reply.value}')));
+        return;
+      case QuickReplyAction.sendText:
+        ref.read(chatProvider.notifier).sendMessage(reply.value);
+        _scrollToBottom();
+        return;
+    }
+  }
+
   void _sendMessage() {
     final text = _controller.text.trim();
     if (text.isEmpty && _pendingImageBase64 == null) return;
@@ -242,12 +264,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen>
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    onPressed: chat.isSending
-                        ? null
-                        : () {
-                            ref.read(chatProvider.notifier).sendMessage(reply.value);
-                            _scrollToBottom();
-                          },
+                    onPressed: chat.isSending ? null : () => _handleQuickReply(reply),
                   );
                 }).toList(),
               ),

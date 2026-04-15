@@ -14,6 +14,10 @@ Color markerColorForStatus(ReportStatus status) {
       return MultandoColors.statusUnderReview;
     case ReportStatus.verified:
       return MultandoColors.statusVerified;
+    case ReportStatus.communityVerified:
+      return MultandoColors.statusVerified;
+    case ReportStatus.authorityReview:
+      return MultandoColors.statusUnderReview;
     case ReportStatus.rejected:
       return MultandoColors.statusRejected;
     case ReportStatus.appealed:
