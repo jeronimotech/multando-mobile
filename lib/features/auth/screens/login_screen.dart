@@ -126,6 +126,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 16),
                 ],
 
+                // Social buttons — primary action
+                const SocialLoginButtons(),
+                const SizedBox(height: 24),
+
+                // Divider
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Or sign in with email',
+                        style: TextStyle(
+                          color: MultandoColors.surface400,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
                 // Email
                 TextFormField(
                   controller: _emailController,
@@ -191,29 +214,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         )
                       : const Text('Log In'),
                 ),
-                const SizedBox(height: 24),
-
-                // Divider
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'Or continue with',
-                        style: TextStyle(
-                          color: MultandoColors.surface400,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // Social buttons
-                const SocialLoginButtons(),
                 const SizedBox(height: 32),
 
                 // Register link
