@@ -5,7 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../../core/colors.dart';
 import '../providers/auth_provider.dart';
 
-/// Social login buttons for Google and GitHub.
+/// Social login buttons.
 class SocialLoginButtons extends ConsumerStatefulWidget {
   const SocialLoginButtons({super.key});
 
@@ -70,28 +70,12 @@ class _SocialLoginButtonsState extends ConsumerState<SocialLoginButtons> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _SocialButton(
-          label: 'Continue with Google',
-          icon: Icons.g_mobiledata,
-          iconColor: MultandoColors.brandRed,
-          isLoading: _isGoogleLoading,
-          onPressed: _handleGoogleSignIn,
-        ),
-        const SizedBox(height: 12),
-        _SocialButton(
-          label: 'Continue with GitHub',
-          icon: Icons.code,
-          iconColor: MultandoColors.surface900,
-          isLoading: false,
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('GitHub login coming soon')),
-            );
-          },
-        ),
-      ],
+    return _SocialButton(
+      label: 'Continue with Google',
+      icon: Icons.g_mobiledata,
+      iconColor: MultandoColors.brandRed,
+      isLoading: _isGoogleLoading,
+      onPressed: _handleGoogleSignIn,
     );
   }
 }
