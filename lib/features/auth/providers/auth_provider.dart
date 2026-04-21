@@ -105,6 +105,28 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
+  /// Authenticate via a social provider (e.g. Google).
+  /// Accepts the provider name and an ID token (mobile flow).
+  Future<void> socialLogin({
+    required String provider,
+    required String idToken,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final client = ref.read(apiClientProvider);
+      await client.auth.socialLogin(provider: provider, idToken: idToken);
+      final profile = await client.auth.getProfile();
+      state = AuthState(
+        status: AuthStatus.authenticated,
+        user: profile,
+      );
+    } on MultandoError catch (e) {
+      state = state.copyWith(isLoading: false, error: e.message);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
   Future<void> logout() async {
     final client = ref.read(apiClientProvider);
     await client.auth.logout();
