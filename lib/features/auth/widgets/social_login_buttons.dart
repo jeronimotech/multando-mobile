@@ -22,7 +22,14 @@ class _SocialLoginButtonsState extends ConsumerState<SocialLoginButtons> {
     setState(() => _isGoogleLoading = true);
 
     try {
-      final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+      final googleSignIn = GoogleSignIn(
+        scopes: ['email', 'profile'],
+        // Web client ID — required for serverAuthCode / ID token that
+        // the backend can verify. Android/iOS client IDs are resolved
+        // automatically from GoogleService-Info.plist / build config.
+        serverClientId:
+            '449342482335-apj5humkt26ouif20gkd0ak6qoc5sktv.apps.googleusercontent.com',
+      );
       final account = await googleSignIn.signIn();
 
       if (account == null) {
