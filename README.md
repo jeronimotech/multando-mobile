@@ -15,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Other reporting channels
+
+This mobile app is one of several entry points into Multando. Reports can also arrive via the WhatsApp Cloud API bot (chat-driven photo + GPS + plate capture) and via the Apify-based Twitter (X) hashtag scraper, both implemented in `multando-backend`. The mobile app sees them all through the same API.
